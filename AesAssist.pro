@@ -37,3 +37,5 @@ RC_ICONS = logo.ico
 
 RESOURCES += \
     res.qrc
+
+LIBS += -lglog

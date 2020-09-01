@@ -7,10 +7,15 @@
 #include <cryptopp/filters.h>
 #include <QByteArray>
 #include "version.hh"
+#include <glog/logging.h>
 
 using namespace std;
 
-static string __Encrypt_Str(string key, string iv, string src){
+static string __Encrypt_Str(string mode, string key, string iv, string src){
+    if(mode != "CBC" && mode != "ECB" && mode != "CFB"){
+        LOG(ERROR) << "invalid aes mode:" << mode;
+        return "";
+    }
     CryptoPP::byte* keyBuf;
     CryptoPP::byte ivBuf[CryptoPP::AES::BLOCKSIZE];
     uint32_t keyLen = 32;
@@ -34,15 +39,34 @@ static string __Encrypt_Str(string key, string iv, string src){
     // Create Cipher Text
     //
     CryptoPP::AES::Encryption aesEncryption(keyBuf, CryptoPP::AES::DEFAULT_KEYLENGTH);
-    CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption( aesEncryption, ivBuf );
 
-    CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink( ciphertext ) );
-    stfEncryptor.Put( reinterpret_cast<const unsigned char*>( src.c_str() ), src.length() );
-    stfEncryptor.MessageEnd();
+    if(mode == "CBC"){
+        CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption( aesEncryption, ivBuf );
+
+        CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink( ciphertext ) );
+        stfEncryptor.Put( reinterpret_cast<const unsigned char*>( src.c_str() ), src.length() );
+        stfEncryptor.MessageEnd();
+    }else if(mode == "ECB"){
+        CryptoPP::ECB_Mode_ExternalCipher::Encryption ecbEncryption( aesEncryption, ivBuf );
+
+        CryptoPP::StreamTransformationFilter stfEncryptor(ecbEncryption, new CryptoPP::StringSink( ciphertext ) );
+        stfEncryptor.Put( reinterpret_cast<const unsigned char*>( src.c_str() ), src.length() );
+        stfEncryptor.MessageEnd();
+    }else if(mode == "CFB"){
+        CryptoPP::CFB_Mode_ExternalCipher::Encryption cfbEncryption( aesEncryption, ivBuf );
+
+        CryptoPP::StreamTransformationFilter stfEncryptor(cfbEncryption, new CryptoPP::StringSink( ciphertext ) );
+        stfEncryptor.Put( reinterpret_cast<const unsigned char*>( src.c_str() ), src.length() );
+        stfEncryptor.MessageEnd();
+    }
     return ciphertext;
 }
 
-static string __Decrypt_Str(string key, string iv, string src){
+static string __Decrypt_Str(string mode, string key, string iv, string src){
+    if(mode != "CBC" && mode != "ECB" && mode != "CFB"){
+        LOG(ERROR) << "invalid aes mode:" << mode;
+        return "";
+    }
     CryptoPP::byte* keyBuf;
     CryptoPP::byte ivBuf[CryptoPP::AES::BLOCKSIZE];
     uint32_t keyLen = 32;
@@ -65,11 +89,26 @@ static string __Decrypt_Str(string key, string iv, string src){
     // Decrypt
     //
     CryptoPP::AES::Decryption aesDecryption(keyBuf, CryptoPP::AES::DEFAULT_KEYLENGTH);
-    CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, ivBuf );
 
-    CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink( decryptedtext ) );
-    stfDecryptor.Put( reinterpret_cast<const unsigned char*>( src.c_str() ), src.size() );
-    stfDecryptor.MessageEnd();
+    if(mode == "CBC"){
+        CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, ivBuf );
+
+        CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink( decryptedtext ) );
+        stfDecryptor.Put( reinterpret_cast<const unsigned char*>( src.c_str() ), src.size() );
+        stfDecryptor.MessageEnd();
+    }else if(mode == "ECB"){
+        CryptoPP::ECB_Mode_ExternalCipher::Decryption ecbDecryption( aesDecryption, ivBuf );
+
+        CryptoPP::StreamTransformationFilter stfDecryptor(ecbDecryption, new CryptoPP::StringSink( decryptedtext ) );
+        stfDecryptor.Put( reinterpret_cast<const unsigned char*>( src.c_str() ), src.size() );
+        stfDecryptor.MessageEnd();
+    }else if(mode == "CFB"){
+        CryptoPP::CFB_Mode_ExternalCipher::Decryption cfbDecryption( aesDecryption, ivBuf );
+
+        CryptoPP::StreamTransformationFilter stfDecryptor(cfbDecryption, new CryptoPP::StringSink( decryptedtext ) );
+        stfDecryptor.Put( reinterpret_cast<const unsigned char*>( src.c_str() ), src.size() );
+        stfDecryptor.MessageEnd();
+    }
 
     return decryptedtext;
 }
@@ -186,7 +225,7 @@ void CMainWin::__On_Encrypt_Decrypt_Changed()
 void CMainWin::__On_StartBtn_Clicked()
 {
     if(ui->m_iEncryptRBtn->isChecked()){ // 加密
-        string out = __Encrypt_Str(ui->m_iKeyEdit->text().toStdString(), ui->m_iIvecEdit->text().toStdString(), ui->m_iSrcInfoEdit->text().toStdString());
+        string out = __Encrypt_Str(ui->m_iAesModeEdit->currentText().toStdString(), ui->m_iKeyEdit->text().toStdString(), ui->m_iIvecEdit->text().toStdString(), ui->m_iSrcInfoEdit->text().toStdString());
         qDebug() << "encrypt string len=" << out.size();
         QByteArray outData = QByteArray::fromStdString(out);
 //        QString dstStr;
@@ -201,7 +240,7 @@ void CMainWin::__On_StartBtn_Clicked()
         qDebug() << "Decrypt src string:" <<srcData.toHex();
         string src = srcData.toStdString();
         qDebug() << "Decrypt src string len=" << src.length();
-        string out = __Decrypt_Str(ui->m_iKeyEdit->text().toStdString(), ui->m_iIvecEdit->text().toStdString(), src);
+        string out = __Decrypt_Str(ui->m_iAesModeEdit->currentText().toStdString(), ui->m_iKeyEdit->text().toStdString(), ui->m_iIvecEdit->text().toStdString(), src);
         qDebug() << "Decrypt string len=" << out.size();
         ui->m_iDstInfoEdit->setText(QString::fromStdString(out));
     }

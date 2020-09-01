@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
-    <height>190</height>
+    <width>566</width>
+    <height>192</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>488</width>
-    <height>190</height>
+    <width>566</width>
+    <height>192</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>488</width>
+    <width>566</width>
     <height>192</height>
    </size>
   </property>
@@ -202,46 +202,8 @@
       <property name="spacing">
        <number>5</number>
       </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label1">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>密钥：</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label3">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>密钥类型：</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="m_iKeyEdit">
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="m_iIvecEdit">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -275,27 +237,8 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QComboBox" name="m_iKeyLenghtEdit">
-        <item>
-         <property name="text">
-          <string>AES128</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>AES192</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>AES256</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="m_iIvecEdit">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label1">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -308,6 +251,28 @@
           <height>25</height>
          </size>
         </property>
+        <property name="text">
+         <string>密钥：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QComboBox" name="m_iPaddingTypeEdit">
+        <item>
+         <property name="text">
+          <string>PKCS5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>PKCS7</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>NOPADDING</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="1" column="2">
@@ -329,23 +294,96 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="3">
-       <widget class="QComboBox" name="m_iPaddingTypeEdit">
+      <item row="1" column="4">
+       <widget class="QLabel" name="label3_3">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>AES模式：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QComboBox" name="m_iAesModeEdit">
         <item>
          <property name="text">
-          <string>PKCS5</string>
+          <string>CBC</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>PKCS7</string>
+          <string>ECB</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>NOPADDING</string>
+          <string>CFB</string>
          </property>
         </item>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QComboBox" name="m_iKeyLenghtEdit">
+        <item>
+         <property name="text">
+          <string>AES128</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>AES192</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>AES256</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="label3">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>密钥类型：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="3">
+       <widget class="QLineEdit" name="m_iKeyEdit">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>25</height>
+         </size>
+        </property>
        </widget>
       </item>
      </layout>
